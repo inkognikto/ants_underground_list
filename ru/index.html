@@ -11,14 +11,12 @@
     <header>
         <div class="top-bar">
             <h2>Ants Underground Kingdom</h2>
-            <!-- Простая переключалка языка -->
             <select onchange="location = this.value;">
                 <option value="" selected>🇷🇺 RU</option>
                 <option value="../en/">🇺🇸 EN</option>
             </select>
         </div>
 
-        <!-- Блок сортировки и фильтрации -->
         <div class="filters">
             <select id="filter-season">
                 <option value="all">Все сезоны</option>
@@ -47,54 +45,42 @@
         </div>
     </header>
 
-    <!-- Сюда JS будет вставлять карточки -->
     <main class="ants-grid" id="ants-container"></main>
 
     <script>
-        const LANG = 'ru'; // Специфика для этой папки
+        const LANG = 'ru'; 
         let antsData = [];
 
-        // Словари для красивого вывода тегов
         const translateMap = {
             war: 'Битва', development: 'Развитие',
             guards: 'Охрана', shooters: 'Стрелки', carriers: 'Носители', neutral: 'Нейтрал'
         };
 
-        // Загрузка данных из единого JSON файла на уровень выше
         async function loadAnts() {
             try {
-                const response = await fetch('../ants_data.json');
+                // Добавляем кэш-бастер (?t=...), чтобы изменения в JSON на хостинге применялись мгновенно
+                const response = await fetch('../ants_data.json?t=' + new Date().getTime());
                 antsData = await response.json();
                 renderAnts(antsData);
             } catch (error) {
-                console.error("Ошибка загрузки базы данных:", error);
+                console.error("Ошибка загрузки JSON:", error);
             }
         }
 
-        // Функция отрисовки карточек
         function renderAnts(data) {
             const container = document.getElementById('ants-container');
             container.innerHTML = '';
 
             data.forEach(ant => {
-                // Выбираем языковые поля динамически
                 const name = ant[`name_${LANG}`];
-                const skills = ant[`skills_${LANG}`] || [];
-
-                // Генерируем HTML для навыков
-                let skillsHTML = '';
-                skills.forEach((skill, index) => {
-                    skillsHTML += `
-                        <div class="skill-item">
-                            <div class="skill-title">${index + 1}. ${skill.title}</div>
-                            <div class="skill-desc">${skill.desc}</div>
-                        </div>
-                    `;
-                });
-
-                // Шаблон карточки
+                
                 const card = document.createElement('div');
                 card.className = 'ant-card';
+                card.id = `card-${ant.id}`;
+                
+                // Проверяем, есть ли вообще звездные навыки у этого муравья
+                const hasStars = ant[`star_skills_${LANG}`] && ant[`star_skills_${LANG}`].length > 0;
+
                 card.innerHTML = `
                     <div class="ant-header">
                         <img class="ant-img" src="../images/ants/${ant.image}" alt="${name}" onerror="this.src='https://placeholder.com';">
@@ -105,15 +91,77 @@
                             <span class="badge">${translateMap[ant.class] || ant.class}</span>
                         </div>
                     </div>
-                    <div class="skills-list">
-                        ${skillsHTML}
+                    
+                    <!-- Переключатель звезд -->
+                    <div class="star-toggle" style="${hasStars ? '' : 'display:none;'}">
+                        <button class="star-btn active" onclick="switchMode('${ant.id}', 'normal')">Без звезды</button>
+                        <button class="star-btn" onclick="switchMode('${ant.id}', 'star')">Со звездой ⭐</button>
+                    </div>
+
+                    <div class="skills-list" id="skills-list-${ant.id}">
+                        <!-- Сюда вставятся навыки через функцию обновления -->
                     </div>
                 `;
+                
                 container.appendChild(card);
+                // Инициализируем вывод дефолтных навыков (без звезд)
+                updateCardSkills(ant, 'normal');
             });
         }
 
-        // Логика фильтрации
+        // Функция, которая перерисовывает только блок навыков конкретного муравья
+        function updateCardSkills(ant, mode) {
+            const listContainer = document.getElementById(`skills-list-${ant.id}`);
+            listContainer.innerHTML = '';
+
+            // Выбираем нужный массив данных в зависимости от режима (обычный или звездный)
+            const key = mode === 'star' ? `star_skills_${LANG}` : `skills_${LANG}`;
+            const skills = ant[key] || ant[`skills_${LANG}`] || [];
+
+            skills.forEach((skill, index) => {
+                const item = document.createElement('div');
+                item.className = 'skill-item';
+                item.innerHTML = `
+                    <button class="skill-trigger" onclick="toggleSkill(this)">
+                        ${index + 1}. ${skill.title}
+                    </button>
+                    <div class="skill-content">
+                        <div class="skill-desc">${skill.desc}</div>
+                    </div>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
+        // Переключение кнопок табов "Без звезды / Со звездой"
+        function switchMode(antId, mode) {
+            const card = document.getElementById(`card-${antId}`);
+            const buttons = card.querySelectorAll('.star-btn');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            if (mode === 'normal') buttons[0].classList.add('active');
+            if (mode === 'star') buttons[1].classList.add('active');
+
+            const ant = antsData.find(a => a.id === antId);
+            updateCardSkills(ant, mode);
+        }
+
+        // Открытие/закрытие аккордеона навыка
+        function toggleSkill(button) {
+            const item = button.parentElement;
+            const isOpen = item.classList.contains('open');
+            
+            // Если нужно, чтобы при открытии одного навыка закрывались другие, раскомментируйте строчки ниже:
+            // const allItems = item.parentElement.querySelectorAll('.skill-item');
+            // allItems.forEach(i => i.classList.remove('open'));
+
+            if (isOpen) {
+                item.classList.remove('open');
+            } else {
+                item.classList.add('open');
+            }
+        }
+
         function applyFilters() {
             const season = document.getElementById('filter-season').value;
             const type = document.getElementById('filter-type').value;
@@ -129,12 +177,10 @@
             renderAnts(filtered);
         }
 
-        // Вешаем события на изменение фильтров
         document.getElementById('filter-season').addEventListener('change', applyFilters);
         document.getElementById('filter-type').addEventListener('change', applyFilters);
         document.getElementById('filter-class').addEventListener('change', applyFilters);
 
-        // Старт приложения
         loadAnts();
     </script>
 </body>
