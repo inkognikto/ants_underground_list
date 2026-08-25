@@ -17,9 +17,17 @@
       {"title": "Золотое Нёбо", "desc": "Lv.10: Атака отряда этого Спец. муравья увеличивается на 30%"},
       {"title": "Штурм", "desc": "Lv.10: Подготовка 1 раунд(а/ов), шанс 40% нанести 182% (+Уровень Спец. Муравья*2%) уровна 3 случайным вражеским Очередям в радиусе действия"}
     ],
+    "star_skills_ru": [
+      {"title": "Доминирование III ⭐", "desc": "Lv.20: Когда Спец. Муравей возглавляет Очередь, то увеличивает Макс. Лимит Очереди на 18100 (+Уровень Спец. Муравья*100). Урон обычной атаки в очереди Спец. Муравья увеличится на 50%"},
+      {"title": "Мощный укус ⭐", "desc": "Lv.20: Шанс 55% нанести 332.5% (+Уровень Спец. Муравья*2.5%) урона 1 случайной вражеской Очереди в радиусе действия"}
+    ],
     "skills_en": [
-      {"title": "Dominance", "desc": "Increases attack by 10%"},
-      {"title": "Nest Defense", "desc": "Boosts guardian defense"}
+      {"title": "Dominance III", "desc": "Lv.10: Description..."},
+      {"title": "Powerful Bite", "desc": "Lv.10: Description..."}
+    ],
+    "star_skills_en": [
+      {"title": "Dominance III ⭐", "desc": "Lv.10 (Star): Star description..."},
+      {"title": "Powerful Bite ⭐", "desc": "Lv.10 (Star): Star description..."}
     ]
   },
     {
