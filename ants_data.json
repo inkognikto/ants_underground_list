@@ -1,0 +1,36 @@
+[
+  {
+    "id": "gold_armor",
+    "season": 0,
+    "type": "war",
+    "class": "guards",
+    "image": "gold_armor.png",
+    "name_ru": "Золотой Панцирь",
+    "name_en": "Gold Armor",
+    "skills_ru": [
+      {"title": "Доминирование", "desc": "Lv.10: Когда Спец. Муравей возглавляет Очередь, то увеличивает Макс. Лимит Очереди на 18100 (+Уровень Спец. Муравья*100)"},
+      {"title": "Защита гнезда", "desc": "Повышает защиту стражей"}
+    ],
+    "skills_en": [
+      {"title": "Dominance", "desc": "Increases attack by 10%"},
+      {"title": "Nest Defense", "desc": "Boosts guardian defense"}
+    ]
+  },
+  {
+    "id": "acid_ant",
+    "season": 3,
+    "type": "war",
+    "class": "shooters",
+    "image": "acid_ant.png",
+    "name_ru": "Кислотный Муравей",
+    "name_en": "Acid Ant",
+    "skills_ru": [
+      {"title": "Кислотный плевок", "desc": "Наносит 200% урона"},
+      {"title": "Разъедание", "desc": "Снижает защиту цели"}
+    ],
+    "skills_en": [
+      {"title": "Acid Spit", "desc": "Deals 200% damage"},
+      {"title": "Corrosion", "desc": "Reduces target defense"}
+    ]
+  }
+]
