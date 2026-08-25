@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Справочник Муравьев - Ants Underground Kingdom</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <header>
+        <div class="top-bar">
+            <h2>Ants Underground Kingdom</h2>
+            <!-- Простая переключалка языка -->
+            <select onchange="location = this.value;">
+                <option value="" selected>🇷🇺 RU</option>
+                <option value="../en/">🇺🇸 EN</option>
+            </select>
+        </div>
+
+        <!-- Блок сортировки и фильтрации -->
+        <div class="filters">
+            <select id="filter-season">
+                <option value="all">Все сезоны</option>
+                <option value="0">Вне сезона (0)</option>
+                <option value="1">Сезон 1</option>
+                <option value="2">Сезон 2</option>
+                <option value="3">Сезон 3</option>
+                <option value="4">Сезон 4</option>
+                <option value="5">Сезон 5</option>
+                <option value="6">Сезон 6</option>
+            </select>
+
+            <select id="filter-type">
+                <option value="all">Все типы</option>
+                <option value="war">Битва (War)</option>
+                <option value="development">Развитие (Dev)</option>
+            </select>
+
+            <select id="filter-class">
+                <option value="all">Все классы</option>
+                <option value="guards">Охрана (Guards)</option>
+                <option value="shooters">Стрелки (Shooters)</option>
+                <option value="carriers">Носители (Carriers)</option>
+                <option value="neutral">Нейтральные (Neutral)</option>
+            </select>
+        </div>
+    </header>
+
+    <!-- Сюда JS будет вставлять карточки -->
+    <main class="ants-grid" id="ants-container"></main>
+
+    <script>
+        const LANG = 'ru'; // Специфика для этой папки
+        let antsData = [];
+
+        // Словари для красивого вывода тегов
+        const translateMap = {
+            war: 'Битва', development: 'Развитие',
+            guards: 'Охрана', shooters: 'Стрелки', carriers: 'Носители', neutral: 'Нейтрал'
+        };
+
+        // Загрузка данных из единого JSON файла на уровень выше
+        async function loadAnts() {
+            try {
+                const response = await fetch('../ants_data.json');
+                antsData = await response.json();
+                renderAnts(antsData);
+            } catch (error) {
+                console.error("Ошибка загрузки базы данных:", error);
+            }
+        }
+
+        // Функция отрисовки карточек
+        function renderAnts(data) {
+            const container = document.getElementById('ants-container');
+            container.innerHTML = '';
+
+            data.forEach(ant => {
+                // Выбираем языковые поля динамически
+                const name = ant[`name_${LANG}`];
+                const skills = ant[`skills_${LANG}`] || [];
+
+                // Генерируем HTML для навыков
+                let skillsHTML = '';
+                skills.forEach((skill, index) => {
+                    skillsHTML += `
+                        <div class="skill-item">
+                            <div class="skill-title">${index + 1}. ${skill.title}</div>
+                            <div class="skill-desc">${skill.desc}</div>
+                        </div>
+                    `;
+                });
+
+                // Шаблон карточки
+                const card = document.createElement('div');
+                card.className = 'ant-card';
+                card.innerHTML = `
+                    <div class="ant-header">
+                        <img class="ant-img" src="../images/ants/${ant.image}" alt="${name}" onerror="this.src='https://placeholder.com';">
+                        <div class="ant-info">
+                            <h3>${name}</h3>
+                            <span class="badge">Сез: ${ant.season === 0 ? 'Вне' : ant.season}</span>
+                            <span class="badge ${ant.type}">${translateMap[ant.type] || ant.type}</span>
+                            <span class="badge">${translateMap[ant.class] || ant.class}</span>
+                        </div>
+                    </div>
+                    <div class="skills-list">
+                        ${skillsHTML}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Логика фильтрации
+        function applyFilters() {
+            const season = document.getElementById('filter-season').value;
+            const type = document.getElementById('filter-type').value;
+            const className = document.getElementById('filter-class').value;
+
+            const filtered = antsData.filter(ant => {
+                const matchSeason = (season === 'all' || ant.season.toString() === season);
+                const matchType = (type === 'all' || ant.type === type);
+                const matchClass = (className === 'all' || ant.class === className);
+                return matchSeason && matchType && matchClass;
+            });
+
+            renderAnts(filtered);
+        }
+
+        // Вешаем события на изменение фильтров
+        document.getElementById('filter-season').addEventListener('change', applyFilters);
+        document.getElementById('filter-type').addEventListener('change', applyFilters);
+        document.getElementById('filter-class').addEventListener('change', applyFilters);
+
+        // Старт приложения
+        loadAnts();
+    </script>
+</body>
+</html>
