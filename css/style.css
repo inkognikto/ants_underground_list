@@ -8,10 +8,21 @@ header { display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px; 
 select { padding: 8px 12px; background: #3a3a3a; color: #fff; border: 1px solid #555; border-radius: 4px; cursor: pointer; }
 
 /* Сетка карточек */
-.ants-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; align-items: start; }
+.ants-grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); 
+  gap: 24px; 
+  align-items: start; 
+}
 
 /* Карточка муравья */
-.ant-card { background: #252525; border-radius: 12px; padding: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 1px solid #333; }
+.ant-card { 
+  background: #252525; 
+  border-radius: 12px; 
+  padding: 20px; 
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
+  border: 1px solid #333; 
+}
 .ant-header { display: flex; gap: 15px; margin-bottom: 12px; }
 .ant-img { width: 80px; height: 80px; border-radius: 8px; object-fit: cover; background: #3a3a3a; border: 1px solid #444; }
 .ant-info h3 { margin-bottom: 5px; font-size: 1.15rem; color: #fff; }
