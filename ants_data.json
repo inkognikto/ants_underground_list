@@ -3,7 +3,7 @@
     "id": "gold_armor",
     "season": 0,
     "type": "war",
-    "class": "guards",
+    "class": "neutral",
     "image": "gold_arm.jpg",
     "name_ru": "Золотой Панцирь",
     "name_en": "Gold Armor",
