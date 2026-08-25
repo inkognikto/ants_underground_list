@@ -58,7 +58,6 @@
 
         async function loadAnts() {
             try {
-                // Добавляем кэш-бастер (?t=...), чтобы изменения в JSON на хостинге применялись мгновенно
                 const response = await fetch('../ants_data.json?t=' + new Date().getTime());
                 antsData = await response.json();
                 renderAnts(antsData);
@@ -78,7 +77,6 @@
                 card.className = 'ant-card';
                 card.id = `card-${ant.id}`;
                 
-                // Проверяем, есть ли вообще звездные навыки у этого муравья
                 const hasStars = ant[`star_skills_${LANG}`] && ant[`star_skills_${LANG}`].length > 0;
 
                 card.innerHTML = `
@@ -92,29 +90,23 @@
                         </div>
                     </div>
                     
-                    <!-- Переключатель звезд -->
                     <div class="star-toggle" style="${hasStars ? '' : 'display:none;'}">
                         <button class="star-btn active" onclick="switchMode('${ant.id}', 'normal')">Без звезды</button>
                         <button class="star-btn" onclick="switchMode('${ant.id}', 'star')">Со звездой ⭐</button>
                     </div>
 
-                    <div class="skills-list" id="skills-list-${ant.id}">
-                        <!-- Сюда вставятся навыки через функцию обновления -->
-                    </div>
+                    <div class="skills-list" id="skills-list-${ant.id}"></div>
                 `;
                 
                 container.appendChild(card);
-                // Инициализируем вывод дефолтных навыков (без звезд)
                 updateCardSkills(ant, 'normal');
             });
         }
 
-        // Функция, которая перерисовывает только блок навыков конкретного муравья
         function updateCardSkills(ant, mode) {
             const listContainer = document.getElementById(`skills-list-${ant.id}`);
             listContainer.innerHTML = '';
 
-            // Выбираем нужный массив данных в зависимости от режима (обычный или звездный)
             const key = mode === 'star' ? `star_skills_${LANG}` : `skills_${LANG}`;
             const skills = ant[key] || ant[`skills_${LANG}`] || [];
 
@@ -122,44 +114,24 @@
                 const item = document.createElement('div');
                 item.className = 'skill-item';
                 item.innerHTML = `
-                    <button class="skill-trigger" onclick="toggleSkill(this)">
-                        ${index + 1}. ${skill.title}
-                    </button>
-                    <div class="skill-content">
-                        <div class="skill-desc">${skill.desc}</div>
-                    </div>
+                    <div class="skill-title">${index + 1}. ${skill.title}</div>
+                    <div class="skill-desc">${skill.desc}</div>
                 `;
                 listContainer.appendChild(item);
             });
         }
 
-        // Переключение кнопок табов "Без звезды / Со звездой"
         function switchMode(antId, mode) {
             const card = document.getElementById(`card-${antId}`);
             const buttons = card.querySelectorAll('.star-btn');
             
             buttons.forEach(btn => btn.classList.remove('active'));
+            
             if (mode === 'normal') buttons[0].classList.add('active');
             if (mode === 'star') buttons[1].classList.add('active');
 
             const ant = antsData.find(a => a.id === antId);
             updateCardSkills(ant, mode);
-        }
-
-        // Открытие/закрытие аккордеона навыка
-        function toggleSkill(button) {
-            const item = button.parentElement;
-            const isOpen = item.classList.contains('open');
-            
-            // Если нужно, чтобы при открытии одного навыка закрывались другие, раскомментируйте строчки ниже:
-            // const allItems = item.parentElement.querySelectorAll('.skill-item');
-            // allItems.forEach(i => i.classList.remove('open'));
-
-            if (isOpen) {
-                item.classList.remove('open');
-            } else {
-                item.classList.add('open');
-            }
         }
 
         function applyFilters() {
